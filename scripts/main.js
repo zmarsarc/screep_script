@@ -1,3 +1,6 @@
-module.exports.loop = function() {
-    Game.spawns["Spawn1"].spawnCreep([WORK, MOVE, CARRY], "mainer");
+module.exports.loop = function () {
+    console.log(sayHello('world!'));
+};
+function sayHello(str) {
+    return 'hello' + str;
 }
