@@ -1,38 +1,35 @@
 "use strict";
+var Status;
+(function (Status) {
+    Status[Status["Harvest"] = 0] = "Harvest";
+    Status[Status["Transfer"] = 1] = "Transfer";
+})(Status || (Status = {}));
 module.exports = {
     loop: function () {
-        var _this = this;
-        Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE], 'worker');
-        var _loop_1 = function (room) {
-            var _loop_2 = function (creep) {
-                var doWork = function () { return _this.workerMove(Game.rooms[room], creep); };
-                doWork();
-            };
-            for (var creep in Game.rooms[room].find(FIND_CREEPS)) {
-                _loop_2(creep);
+        var spawn = Game.spawns['Spawn1'];
+        var sources = spawn.room.find(FIND_SOURCES_ACTIVE);
+        var creeps = spawn.room.find(FIND_MY_CREEPS);
+        for (var _i = 0, creeps_1 = creeps; _i < creeps_1.length; _i++) {
+            var c = creeps_1[_i];
+            var status_1 = c.memory.status;
+            if (status_1 === Status.Transfer) {
+                if (c.transfer(spawn, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                    c.moveTo(spawn);
+                    break;
+                }
+                if (c.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
+                    c.memory.status = Status.Harvest;
+                }
             }
-        };
-        for (var room in Game.rooms) {
-            _loop_1(room);
-        }
-    },
-    workerMove: function (room, creep) {
-        // 如果已经装满了矿，回家卸货
-        if (creep.store[RESOURCE_ENERGY] !== undefined && creep.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
-            var spawn = room.find(FIND_MY_SPAWNS)[0];
-            if (creep.transfer(spawn, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(spawn);
-                return;
+            if (status_1 === Status.Harvest) {
+                if (c.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
+                    c.moveTo(sources[0]);
+                    break;
+                }
+                if (c.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
+                    c.memory.status = Status.Transfer;
+                }
             }
-        }
-        // 找到有能量的矿
-        var sources = room.find(FIND_SOURCES_ACTIVE);
-        if (sources.length === 0) {
-            return;
-        }
-        // 尝试采矿
-        if (creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(sources[0]);
         }
     }
 };
