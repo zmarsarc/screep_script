@@ -12,6 +12,9 @@ module.exports = {
         for (var _i = 0, creeps_1 = creeps; _i < creeps_1.length; _i++) {
             var c = creeps_1[_i];
             var status_1 = c.memory.status;
+            if (status_1 === undefined) {
+                status_1 = Status.Harvest;
+            }
             if (status_1 === Status.Transfer) {
                 if (c.transfer(spawn, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                     c.moveTo(spawn);

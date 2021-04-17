@@ -12,7 +12,10 @@ module.exports = {
         const creeps = spawn.room.find(FIND_MY_CREEPS);
 
         for (let c of creeps) {
-            const status = (<CreepStatuser>c.memory).status;
+            let status = (<CreepStatuser>c.memory).status;
+            if (status === undefined) {
+               status = Status.Harvest; 
+            }
 
             if (status === Status.Transfer) {
                 if (c.transfer(spawn, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
