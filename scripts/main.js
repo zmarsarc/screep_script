@@ -3,17 +3,22 @@ module.exports = {
     loop: function () {
         var _this = this;
         Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE], 'worker');
-        var _loop_1 = function (creep) {
-            var doWork = function () { return _this.workerMove(Game.rooms[0], creep); };
-            doWork();
+        var _loop_1 = function (room) {
+            var _loop_2 = function (creep) {
+                var doWork = function () { return _this.workerMove(Game.rooms[room], creep); };
+                doWork();
+            };
+            for (var creep in Game.rooms[room].find(FIND_CREEPS)) {
+                _loop_2(creep);
+            }
         };
-        for (var creep in Game.creeps) {
-            _loop_1(creep);
+        for (var room in Game.rooms) {
+            _loop_1(room);
         }
     },
     workerMove: function (room, creep) {
         // 如果已经装满了矿，回家卸货
-        if (creep.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
+        if (creep.store[RESOURCE_ENERGY] !== undefined && creep.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
             var spawn = room.find(FIND_MY_SPAWNS)[0];
             if (creep.transfer(spawn, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                 creep.moveTo(spawn);
