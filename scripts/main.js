@@ -1,7 +1,15 @@
 "use strict";
 module.exports = {
     loop: function () {
+        var _this = this;
         Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE], 'worker');
+        var _loop_1 = function (creep) {
+            var doWork = function () { return _this.workerMove(Game.rooms[0], creep); };
+            doWork();
+        };
+        for (var creep in Game.creeps) {
+            _loop_1(creep);
+        }
     },
     workerMove: function (room, creep) {
         // 如果已经装满了矿，回家卸货

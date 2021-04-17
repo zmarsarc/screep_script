@@ -1,6 +1,10 @@
 module.exports = {
     loop: function() {
         Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE], 'worker');
+        for (let creep in Game.creeps) {
+            const doWork = () => this.workerMove(Game.rooms[0], creep);
+            doWork();
+        }
     },
 
     workerMove: function(room: Room, creep: Creep) {
